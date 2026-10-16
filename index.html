@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Football Manager 2.1 — Carreira Mundial</title>
+<style>
+:root{--navy:#10233f;--blue:#155eef;--gold:#ffcb45;--green:#18864b;--paper:#f3f6fb}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#142238}
+header{background:linear-gradient(120deg,#0d2342,#155eef);color:white;padding:18px 16px 22px}
+.wrap{max-width:1050px;margin:auto}h1{margin:0;font-size:clamp(24px,5vw,38px)}header p{margin:5px 0 0;opacity:.9}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.stat{background:#ffffff1c;border:1px solid #ffffff2b;border-radius:13px;padding:10px}.stat small{display:block;opacity:.85;font-size:12px}.stat strong{font-size:20px}
+main{max-width:1050px;margin:16px auto;padding:0 12px 30px;display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+.panel{background:white;border:1px solid #e0e7f0;border-radius:17px;padding:14px;box-shadow:0 5px 18px #17345a0a;min-width:0}
+h2{font-size:18px;margin:0 0 12px}.pitch{position:relative;overflow:hidden;border-radius:12px;aspect-ratio:1.55;background:repeating-linear-gradient(0deg,#21864b 0 12.5%,#249452 12.5% 25%);border:4px solid #eaf8ed}
+.pitch:before{content:"";position:absolute;inset:7%;border:2px solid #ffffffc9;border-radius:2px}.midline{position:absolute;left:50%;top:7%;bottom:7%;border-left:2px solid #ffffffc9}.circle{position:absolute;width:25%;aspect-ratio:1;left:37.5%;top:32%;border:2px solid #ffffffc9;border-radius:50%}
+.boxarea{position:absolute;top:28%;bottom:28%;width:15%;border:2px solid #ffffffc9}.leftarea{left:7%}.rightarea{right:7%}
+.goal{position:absolute;top:41%;height:18%;width:4%;border:2px solid white}.goal.left{left:3%}.goal.right{right:3%}
+.player{position:absolute;transform:translate(-50%,-50%);width:clamp(24px,5vw,38px);height:clamp(24px,5vw,38px);border-radius:50%;border:2px solid white;box-shadow:0 2px 4px #0005;display:grid;place-items:center;font-size:clamp(9px,2vw,12px);font-weight:900;color:white}
+.playerName{position:absolute;left:50%;top:calc(100% + 2px);transform:translateX(-50%);font-size:9px;line-height:1.1;background:#10233fe8;color:#fff;padding:2px 4px;border-radius:4px;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}.crowd{background:#10233f;color:#fff;padding:9px 12px;border-radius:9px;margin-top:9px;font-size:13px;display:flex;align-items:center;gap:8px}.crowd button{padding:6px 9px}.home{background:#1748c7}.away{background:#e74747}.ball{position:absolute;left:50%;top:50%;width:18px;height:18px;background:white;border:2px solid #18212c;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 2px 5px #0006}
+.scoreline{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:12px 0}.score{font-size:23px;font-weight:900}.tag{background:#eef3ff;color:#234eaa;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}
+button{font:inherit;font-weight:750;border:0;border-radius:10px;padding:11px 12px;cursor:pointer;transition:transform .08s,filter .15s}button:active{transform:scale(.98)}button:disabled{opacity:.42;cursor:not-allowed}
+.primary{background:var(--blue);color:white}.secondary{background:#edf2f8;color:#182b45}.gold{background:var(--gold);color:#392900}.danger{background:#ffebeb;color:#9b2323}
+.actions{display:flex;flex-wrap:wrap;gap:8px}.actions button{flex:1}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tab{flex:1;padding:9px 6px;background:#edf2f8;color:#32425a}.tab.active{background:#102b52;color:white}
+.item{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid #edf0f5}.item:last-child{border:0}.emoji{font-size:28px;width:42px;text-align:center}.iteminfo{flex:1;min-width:0}.iteminfo strong{display:block}.iteminfo small{color:#64748b}.item button{padding:8px 10px;white-space:nowrap}
+.log{background:#f5f8fc;border-radius:10px;padding:10px;min-height:62px;color:#40516b;font-size:13px;line-height:1.5;margin-top:10px}
+.progress{height:8px;background:#e5eaf2;border-radius:10px;overflow:hidden;margin-top:7px}.progress span{display:block;height:100%;background:#22a568}
+.notice{font-size:12px;color:#66758b;margin-top:10px}.full{grid-column:1/-1}
+@media(max-width:740px){main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.full{grid-column:auto}.panel{padding:12px}}
+
+/* Estádio dinâmico: arquibancadas, refletores e gramado vivo */
+.stadium-scene{position:relative;padding:18px 14px 12px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#263b57,#52677a 35%,#24364a);transition:background .5s}
+.stadium-scene:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,#ffffff0b 0 3px,transparent 3px 12px);pointer-events:none}
+.stadium-scene:after{content:"";position:absolute;left:8%;right:8%;top:5px;height:12px;border-radius:50%;background:#fff;filter:blur(10px);opacity:var(--light-power,.12);pointer-events:none}
+.stadium-scene .pitch{z-index:1;box-shadow:0 5px 18px #0007;animation:grassPulse 5s ease-in-out infinite}
+.stadium-scene .stands{display:flex;justify-content:space-around;gap:3px;margin:0 0 8px;padding:7px 8px;border-radius:8px;background:repeating-linear-gradient(90deg,#183653 0 12px,#315776 12px 18px);color:#f4f8ff;font-size:12px;letter-spacing:2px;box-shadow:inset 0 -3px #101e32}
+.stadium-scene .stands.bottom{margin:8px 0 0}
+.stadium-scene .stands span{animation:fanWave 1.2s ease-in-out infinite alternate}
+.stadium-scene .stands span:nth-child(2n){animation-delay:.3s}.stadium-scene .stands span:nth-child(3n){animation-delay:.6s}
+.pitch .player{transition:left .65s ease,top .65s ease,transform .2s}
+.pitch .ball{transition:left .35s ease-in,top .35s ease-in}
+.pitch.kick .ball{animation:ballKick .45s ease-in-out}
+.pitch.goal-flash{animation:goalFlash .8s ease-in-out 2}
+@keyframes fanWave{from{opacity:.5;transform:translateY(1px)}to{opacity:1;transform:translateY(-2px)}}
+@keyframes grassPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+@keyframes ballKick{0%{scale:1}50%{scale:1.35}100%{scale:1}}
+@keyframes goalFlash{0%,100%{filter:brightness(1)}50%{filter:brightness(1.65)}}
+@media(prefers-reduced-motion:reduce){.stadium-scene *, .stadium-scene{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1 id="clubTitle">⚽ Football Manager 2.1</h1><p>Contrate craques caríssimos, dispute ligas do mundo, conquiste títulos e transforme seu estádio em uma arena lendária!</p>
+<div class="stats">
+<div class="stat"><small>💰 Dinheiro</small><strong id="money">R$ 500</strong></div>
+<div class="stat"><small>⭐ Fama</small><strong id="fans">0</strong></div>
+<div class="stat"><small>🏆 Troféus</small><strong id="cups">0</strong></div>
+<div class="stat"><small>📊 Força do time</small><strong id="power">10</strong></div>
+</div></div></header>
+<main>
+<section class="panel">
+<h2>🏟️ Seu estádio</h2><div class="notice" style="margin:0 0 8px">Visualização do campo inteiro • Estádio evolui até o nível 100</div>
+<div class="stadium-scene" id="stadiumScene"><div class="stands" aria-label="Torcida nas arquibancadas"><span>● ● ● ● ● ● ●</span><span>● ● ● ● ● ● ●</span><span>● ● ● ● ● ● ●</span></div><div class="pitch" id="pitch" aria-label="Campo de futebol visto de cima">
+<div class="midline"></div><div class="circle"></div><div class="boxarea leftarea"></div><div class="boxarea rightarea"></div><div class="goal left"></div><div class="goal right"></div>
+<div class="player home" style="left:22%;top:50%" title="Goleiro titular">G</div><div class="player home" style="left:35%;top:30%" title="Craque do time">10<span class="playerName">Craque</span></div><div class="player home" style="left:35%;top:70%">7<span class="playerName">Ponta</span></div><div class="player home" style="left:48%;top:42%">9<span class="playerName">Atacante</span></div><div class="player home" style="left:48%;top:60%">8<span class="playerName">Meia</span></div>
+<div class="player away" style="left:78%;top:50%">GOL</div><div class="player away" style="left:66%;top:30%">4</div><div class="player away" style="left:66%;top:70%">5</div><div class="player away" style="left:57%;top:43%">9</div><div class="player away" style="left:57%;top:60%">8</div><div class="ball" id="ball"></div>
+</div><div class="stands bottom"><span>● ● ● ● ● ● ●</span><span>● ● ● ● ● ● ●</span><span>● ● ● ● ● ● ●</span></div></div>
+<div class="scoreline"><span class="tag" id="league">LIGA AMADORA</span><span class="score" id="score">0 × 0</span><span class="tag" id="matchno">JOGO 1</span></div>
+<div class="actions"><button class="primary" id="matchBtn" onclick="playMatch()">▶ Disputar partida</button><button class="secondary" onclick="train()">💪 Treinar</button></div>
+<div class="item" style="margin-top:8px"><div class="iteminfo"><strong>Quantidade de treinos</strong><small>Escolha de 1 a 5 treinos por vez. O preço aumenta a cada treino.</small></div><select id="trainCount" aria-label="Quantidade de treinos" style="max-width:90px;padding:8px;border:1px solid #d5deea;border-radius:8px;font:inherit"><option value="1">1 vez</option><option value="2">2 vezes</option><option value="3">3 vezes</option><option value="4">4 vezes</option><option value="5">5 vezes</option></select></div>
+<div class="crowd">📣 <span id="crowdStatus">Som da torcida: desligado</span><button class="gold" id="crowdBtn" onclick="toggleCrowd()">Ativar torcida</button></div><div class="log" id="matchLog">Seu clube está pronto! Dispute uma partida para ganhar dinheiro e fama. Treine para aumentar a força do time.</div>
+<div class="notice">Dica: os adversários ficam mais fortes conforme você avança. Ganhe bônus por gols, vitórias e partidas. Invista em melhorias cada vez mais caras para aumentar seus ganhos!</div>
+</section>
+<section class="panel">
+<div class="tabs"><button class="tab active" id="tabSquad" onclick="showTab('squad')">👥 Elenco</button><button class="tab" id="tabShop" onclick="showTab('shop')">🛒 Loja</button><button class="tab" id="tabTrophy" onclick="showTab('trophy')">🏆 Conquistas</button></div>
+<div id="content"></div>
+</section>
+<section class="panel full"><h2>🧭 Escolha seu clube e competição</h2><div class="actions" style="align-items:center"><label style="flex:1;min-width:180px">Liga ou seleção<select id="careerLeague" onchange="renderClubChoices()" style="display:block;width:100%;margin-top:5px;padding:11px;border:1px solid #d5deea;border-radius:10px;font:inherit"></select></label><label style="flex:1;min-width:180px">Time para jogar<select id="careerClub" style="display:block;width:100%;margin-top:5px;padding:11px;border:1px solid #d5deea;border-radius:10px;font:inherit"></select></label><button class="primary" onclick="chooseCareer()">✅ Escolher time</button></div><p class="notice" id="careerStatus">Escolha uma liga e depois selecione o clube ou uma seleção.</p></section><section class="panel full"><h2>🌍 Nome e dificuldade</h2><div class="actions"><input id="teamNameInput" maxlength="28" placeholder="Nome do clube / jogador" style="flex:2;min-width:150px;padding:11px;border:1px solid #d5deea;border-radius:10px;font:inherit"><button class="primary" onclick="renameClub()">Salvar nome</button><select id="difficulty" onchange="setDifficulty(this.value)" style="padding:10px;border:1px solid #d5deea;border-radius:10px;font:inherit"><option value="easy">Fácil</option><option value="medium">Médio</option><option value="hard">Hard (difícil)</option></select></div><p class="notice">A dificuldade muda a força dos adversários.</p></section>
+<section class="panel full"><h2>🌐 Ligas e países</h2><div id="leagueList" class="actions"></div><p class="notice">5 principais ligas europeias: Premier League (Inglaterra), LaLiga (Espanha), Serie A (Itália), Bundesliga (Alemanha) e Ligue 1 (França), além de Brasil, Portugal, Argentina, Países Baixos e Estados Unidos.</p></section>
+<section class="panel full"><h2>🌎 Ranking global</h2><p class="notice">Atualiza a cada 5 minutos. Sem servidor online, o ranking é local/demonstrativo; um ranking global compartilhado exige backend.</p><div class="tabs"><button class="tab active" onclick="renderLeaderboard('money',this)">💰 Dinheiro</button><button class="tab" onclick="renderLeaderboard('fame',this)">⭐ Fama</button><button class="tab" onclick="renderLeaderboard('cups',this)">🏆 Títulos</button></div><div id="leaderboard"></div><small id="rankUpdated" class="notice"></small></section>
+<section class="panel full">
+<h2>📈 Progresso do clube</h2>
+<div style="display:flex;justify-content:space-between;gap:8px"><span id="stadiumLabel">Estádio: Campo normal</span><strong id="stadiumLevel">Nível 1/100</strong></div>
+<div class="progress"><span id="stadiumProgress" style="width:20%"></span></div>
+<div class="actions" style="margin-top:12px"><button class="gold" onclick="upgradeStadium()">🛠️ Melhorar estádio</button><button class="secondary" onclick="saveGame()">💾 Salvar progresso</button><button class="danger" onclick="resetGame()">↻ Reiniciar jogo</button></div>
+<div class="notice">O progresso fica salvo neste navegador/dispositivo. Use “Salvar progresso” antes de fechar a página.</div>
+</section>
+</main>
+<script>
+const defaultState=()=>({money:500,fans:0,cups:0,power:10,match:1,wins:0,losses:0,draws:0,stadium:1,players:[],playerLevels:{},trainCount:0,teamName:"Meu Clube",careerLeague:"🇧🇷 Brasileirão Série A",careerClub:"Flamengo",difficulty:"medium",unlocked:[],lastScore:"0 × 0",lastLog:"Seu clube está pronto! Dispute uma partida para ganhar dinheiro e fama. Treine para aumentar a força do time."});
+let s=(()=>{try{let old=JSON.parse(localStorage.getItem('construaClubeSave')||'{}');return {...defaultState(),...old,playerLevels:old.playerLevels||{},trainCount:old.trainCount||0,teamName:old.teamName||'Meu Clube',careerLeague:old.careerLeague||'🇧🇷 Brasileirão Série A',careerClub:old.careerClub||'Flamengo',difficulty:old.difficulty||'medium'}}catch(e){return defaultState()}})();
+const players=[
+{name:"Goleiro promissor",emoji:"🧤",price:2500000,power:4,desc:"Defende chutes difíceis."},
+{name:"Atacante veloz",emoji:"⚡",price:5000000,power:6,desc:"Mais chances de marcar gols."},
+{name:"Meio-campista craque",emoji:"🎯",price:8500000,power:8,desc:"Organiza as jogadas."},
+{name:"Zagueiro muralha",emoji:"🛡️",price:12000000,power:9,desc:"Dificulta os gols adversários."},
+{name:"Superestrela",emoji:"🌟",price:50000000,power:15,desc:"Um craque para mudar o clube."},
+{name:"Cristiano Ronaldo (CR7)",emoji:"🐐",price:250000000,power:55,desc:"Lenda goleadora mundial."},
+{name:"Lionel Messi",emoji:"✨",price:280000000,power:58,desc:"Craque histórico de técnica extraordinária."},
+{name:"Neymar Jr.",emoji:"🇧🇷",price:180000000,power:46,desc:"Drible, criatividade e talento brasileiro."},
+{name:"Gianluigi Buffon",emoji:"🧤",price:160000000,power:42,desc:"Goleiro lendário e líder da defesa."},
+{name:"Kylian Mbappé",emoji:"⚡",price:220000000,power:52,desc:"Velocidade explosiva e muitos gols."},
+{name:"Erling Haaland",emoji:"🎯",price:210000000,power:50,desc:"Centroavante poderoso e finalizador."},
+{name:"Kevin De Bruyne",emoji:"🪄",price:170000000,power:44,desc:"Passe preciso e visão de jogo."},
+{name:"Vinícius Júnior",emoji:"🇧🇷",price:190000000,power:47,desc:"Velocidade e dribles decisivos."},
+{name:"Luka Modrić",emoji:"🧠",price:150000000,power:40,desc:"Meio-campista experiente e técnico."},
+{name:"Mohamed Salah",emoji:"👑",price:175000000,power:45,desc:"Atacante veloz e goleador."},
+{name:"Jude Bellingham",emoji:"💎",price:200000000,power:49,desc:"Meio-campista completo."},{name:"Harry Kane",emoji:"🎯",price:165000000,power:43,desc:"Artilheiro de elite."},{name:"Rodri",emoji:"🧠",price:155000000,power:42,desc:"Controle no meio-campo."},{name:"Lamine Yamal",emoji:"🌠",price:190000000,power:48,desc:"Jovem talento de classe mundial."},{name:"Robert Lewandowski",emoji:"⚽",price:145000000,power:41,desc:"Finalizador experiente."},{name:"Virgil van Dijk",emoji:"🛡️",price:140000000,power:40,desc:"Zagueiro dominante."},{name:"Alisson Becker",emoji:"🧤",price:135000000,power:39,desc:"Goleiro de elite."},{name:"Ronaldo Fenômeno",emoji:"🇧🇷",price:350000000,power:65,desc:"Lenda histórica do futebol."},{name:"Ronaldinho Gaúcho",emoji:"🪄",price:320000000,power:62,desc:"Magia e dribles inesquecíveis."},{name:"Pelé",emoji:"👑",price:500000000,power:75,desc:"O Rei do Futebol."}
+];
+// Corrige saves antigos/corrompidos antes de renderizar a interface.
+try{
+ s.stadium=Math.max(1,Math.min(100,Math.floor(Number(s.stadium)||1)));
+ s.money=Math.max(0,Number(s.money)||0); s.fans=Math.max(0,Number(s.fans)||0);
+ s.cups=Math.max(0,Number(s.cups)||0); s.power=Math.max(1,Number(s.power)||10);
+ s.match=Math.max(1,Math.floor(Number(s.match)||1));
+ s.players=Array.isArray(s.players)?[...new Set(s.players.filter(i=>Number.isInteger(i)&&i>=0&&i<players.length))]:[];
+ s.playerLevels=s.playerLevels&&typeof s.playerLevels==='object'?s.playerLevels:{};
+ s.trainCount=Math.max(0,Math.floor(Number(s.trainCount)||0));
+ s.difficulty=['easy','medium','hard'].includes(s.difficulty)?s.difficulty:'medium';
+ s.unlocked=Array.isArray(s.unlocked)?s.unlocked:[];
+}catch(e){s=defaultState()}
+const stadiumNames=["Campo normal","Campo de bairro","Arquibancada pequena","Estádio iluminado","Arena do clube","Estádio profissional","Arena moderna","Estádio nacional","Arena internacional","Estádio dos campeões","Superestádio lendário"];
+const stadiumCosts=[0,5000,15000,35000,70000,120000,200000,350000,600000,1000000];
+const upgrades=Array.from({length:100},(_,i)=>({name:i<stadiumNames.length?stadiumNames[i]:`Estádio nível ${i+1}`,cost:i===0?0:(stadiumCosts[i]??Math.round(1000000*Math.pow(1.075,i-9)))}));
+
+function fmt(n){return 'R$ '+Math.floor(n).toLocaleString('pt-BR')}
+function renderStats(){document.getElementById('clubTitle').textContent='⚽ '+(s.teamName||'Meu Clube');document.getElementById('money').textContent=fmt(s.money);document.getElementById('fans').textContent=s.fans.toLocaleString('pt-BR');document.getElementById('cups').textContent=s.cups;document.getElementById('power').textContent=s.power;document.getElementById('score').textContent=s.lastScore;document.getElementById('matchno').textContent='JOGO '+s.match;document.getElementById('league').textContent=s.cups>=5?'LIGA DOS CAMPEÕES':s.cups>=2?'LIGA NACIONAL':'LIGA AMADORA';document.getElementById('matchLog').textContent=s.lastLog;document.getElementById('stadiumLabel').textContent='Estádio: '+(upgrades[Math.max(0,Math.min(upgrades.length-1,s.stadium-1))]?.name||'Campo normal');document.getElementById('stadiumLevel').textContent='Nível '+s.stadium+'/'+upgrades.length;document.getElementById('stadiumProgress').style.width=(s.stadium/upgrades.length*100)+'%';const scene=document.getElementById('stadiumScene');if(scene){scene.style.setProperty('--light-power',Math.min(.85,.12+s.stadium*.007));scene.style.background=s.stadium<4?'linear-gradient(180deg,#465b70,#65798a 35%,#24364a)':s.stadium<8?'linear-gradient(180deg,#263d5c,#486477 35%,#172c43)':'linear-gradient(180deg,#111f3b,#334c69 35%,#0d2036)';scene.dataset.level=s.stadium;}document.getElementById('matchBtn').disabled=false}
+let currentTab='squad';
+function showTab(tab){currentTab=tab;['squad','shop','trophy'].forEach(t=>document.getElementById('tab'+t[0].toUpperCase()+t.slice(1)).classList.toggle('active',t===tab));renderContent()}
+function renderContent(){let c=document.getElementById('content');
+if(currentTab==='squad'){c.innerHTML=`<h2>Seu elenco (${5+s.players.length} jogadores)</h2><div class="item"><div class="emoji">🧤</div><div class="iteminfo"><strong>Goleiro titular</strong><small>Defesa básica • contratado</small></div><span class="tag">+2</span></div><div class="item"><div class="emoji">⚽</div><div class="iteminfo"><strong>Atacante da base</strong><small>Jovem promessa • contratado</small></div><span class="tag">+2</span></div>`+s.players.map(i=>`<div class="item"><div class="emoji">${players[i].emoji}</div><div class="iteminfo"><strong>${players[i].name}</strong><small>${players[i].desc}</small></div><span class="tag">+${players[i].power}</span></div>`).join('')+`<p class="notice">Força total: ${s.power}. Treine e contrate novos jogadores para ficar mais forte.</p>`}
+if(currentTab==='shop'){c.innerHTML='<h2>Mercado de jogadores e estrelas</h2><p class="notice">Os preços são extremamente altos: os jogadores comuns custam dezenas ou centenas de milhares, e as estrelas mundiais custam centenas de milhões. Jogadores podem ser melhorados até o nível 5; o estádio tem 100 níveis com preços crescentes.</p>'+players.map((p,i)=>{let owned=s.players.includes(i),level=owned?(s.playerLevels[i]||1):0,price=owned?Math.round(p.price*(0.55+level*0.55)):p.price;return `<div class="item"><div class="emoji">${p.emoji}</div><div class="iteminfo"><strong>${p.name}</strong><small>${p.desc}</small><small>${owned?'Nível '+level+'/5 • próximo aumento de força +'+p.power:'Força inicial +'+p.power}</small><small><b>${fmt(price)}</b></small></div><button class="${owned?'secondary':'primary'}" ${(owned&&level>=5)||s.money<price?'disabled':''} onclick="${owned?`upgradePlayer(${i})`:`buyPlayer(${i})`}">${!owned?'Contratar':level>=5?'Nível máximo':'Melhorar'}</button></div>`}).join('')}
+if(currentTab==='trophy'){let goals=[['Primeira vitória','Vença uma partida',s.wins>=1],['Torcida crescendo','Chegue a 100 fãs',s.fans>=100],['Elenco reforçado','Contrate 3 jogadores',s.players.length>=3],['Casa cheia','Melhore o estádio até o nível 3',s.stadium>=3],['Primeiro troféu','Jogue 100 partidas e ganhe um troféu',s.cups>=1],['Treino pesado','Faça 10 treinos',s.trainCount>=10],['Clube milionário','Tenha R$ 5.000 guardados',s.money>=5000],['Time de estrelas','Melhore um jogador até o nível 5',Object.values(s.playerLevels).some(v=>v>=5)],['Lenda do bairro','Vença 25 partidas',s.wins>=25],['Centenário','Dispute 100 partidas',s.match>100]];c.innerHTML='<h2>Conquistas (10)</h2>'+goals.map(g=>`<div class="item"><div class="emoji">${g[2]?'🏆':'🔒'}</div><div class="iteminfo"><strong>${g[0]}</strong><small>${g[1]}</small></div><span class="tag">${g[2]?'DESBLOQUEADA':'BLOQUEADA'}</span></div>`).join('')}
+}
+function update(){renderStats();renderContent();saveGame(false)}
+function buyPlayer(i){let p=players[i];if(s.players.includes(i)||s.money<p.price)return;s.money-=p.price;s.players.push(i);s.playerLevels[i]=1;s.power+=p.power;s.lastLog='Contratação concluída: '+p.name+' entrou para o elenco no nível 1!';update()}
+function upgradePlayer(i){let p=players[i],level=s.playerLevels[i]||1;if(level>=5)return;let price=Math.round(p.price*(0.55+level*0.55));if(s.money<price){s.lastLog='Dinheiro insuficiente. Faltam '+fmt(price-s.money)+' para melhorar '+p.name+'.';update();return}s.money-=price;s.playerLevels[i]=level+1;s.power+=p.power;s.lastLog=p.name+' melhorado para o nível '+(level+1)+'! Força +'+p.power+'.';update()}
+function renameClub(){let value=document.getElementById('teamNameInput').value.trim();if(!value){s.lastLog='Digite um nome antes de salvar.';update();return}s.teamName=value;s.lastLog='Nome do clube alterado para '+value+'!';update()}
+function train(){let count=Math.max(1,Math.min(5,Number(document.getElementById('trainCount').value)||1));let total=0,done=0;for(let i=0;i<count;i++){let price=100+s.trainCount*50;if(s.money<price)break;s.money-=price;total+=price;s.power+=2;s.trainCount++;done++}if(!done){s.lastLog='Dinheiro insuficiente para treinar. O próximo treino custa '+fmt(100+s.trainCount*50)+'.'}else{s.lastLog=done+' treino(s) concluído(s)! Força +'+(done*2)+'. Custo total: '+fmt(total)+'. Próximo treino: '+fmt(100+s.trainCount*50)+'.'}update()}
+function upgradeStadium(){
+if(s.stadium>=upgrades.length){s.lastLog='Seu estádio já está no nível máximo!';update();return}
+let cost=upgrades[s.stadium].cost;
+if(s.money<cost){s.lastLog='Faltam '+fmt(cost-s.money)+' para melhorar o estádio.';update();return}
+s.money-=cost;s.stadium++;s.fans+=s.stadium*100;
+s.lastLog='Estádio melhorado para: '+upgrades[s.stadium-1].name+'! A torcida cresceu e os ganhos por partida aumentaram. Seu estádio pode chegar ao nível 100!';
+update()}
+function playMatch(){
+const matchNumber=s.match;
+const teamRating=Math.max(1,s.power+s.stadium*2);
+const divisionBonus = matchNumber >= 101 ? 5 : matchNumber >= 51 ? 3 : matchNumber >= 21 ? 1 : 0;
+const diffFactor={easy:0.58,medium:0.82,hard:1.12}[s.difficulty||'medium'];const opponentRating=5+Math.min(matchNumber*0.10,12)+teamRating*diffFactor+divisionBonus+(Math.random()*6-3);
+const difference=teamRating-opponentRating;
+const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+const homeExpected=clamp(2.2+difference/32,0.7,4.2);
+const awayExpected=clamp(2.2-difference/32,0.7,4.2);
+const variation=()=>((Math.random()+Math.random()+Math.random())-1.5)*1.4;
+const homeGoals=clamp(Math.round(homeExpected+variation()),0,10);
+const awayGoals=clamp(Math.round(awayExpected+variation()),0,10);
+s.lastScore=homeGoals+' × '+awayGoals;
+s.match++;
+const baseReward=500+(s.stadium*180)+Math.floor(matchNumber*12);
+const goalBonus=(homeGoals+awayGoals)*75;
+let reward=0;
+if(homeGoals>awayGoals){
+s.wins++; reward=baseReward+goalBonus+250;
+s.money+=reward;s.fans+=50+s.stadium*10;
+s.lastLog=`VITÓRIA! ${homeGoals} a ${awayGoals}. Você ganhou ${fmt(reward)} (inclui bônus de vitória e gols) e novos torcedores!`;
+}else if(homeGoals===awayGoals){
+s.draws++;reward=Math.floor(baseReward*0.75)+goalBonus;
+s.money+=reward;s.fans+=20+s.stadium*4;
+s.lastLog=`Empate em ${homeGoals} a ${awayGoals}. Você ganhou ${fmt(reward)} e novos torcedores.`;
+}else{
+s.losses++;reward=Math.floor(baseReward*0.5)+goalBonus;
+s.money+=reward;
+s.lastLog=`Derrota por ${homeGoals} a ${awayGoals}. Mesmo assim, você recebeu ${fmt(reward)} pela participação e pelos gols.`;
+}
+if(matchNumber>0&&matchNumber%10===0){const bonus=1000+matchNumber*25;s.money+=bonus;s.lastLog+=` 🎁 Bônus de temporada: +${fmt(bonus)}!`;}
+if(matchNumber>0&&matchNumber%25===0){s.cups++;const bonus=2500;s.money+=bonus;s.lastLog+=` 🏆 Troféu conquistado! Bônus extra de ${fmt(bonus)}!`;}
+if(s.fans>=100&&!s.unlocked.includes('fans'))s.unlocked.push('fans');
+const ball=document.getElementById('ball'),pitch=document.getElementById('pitch');
+if(ball&&pitch){ball.style.left=(12+Math.random()*76)+'%';ball.style.top=(12+Math.random()*76)+'%';pitch.classList.remove('kick','goal-flash');void pitch.offsetWidth;pitch.classList.add('kick');if(homeGoals>awayGoals)pitch.classList.add('goal-flash');
+pitch.querySelectorAll('.player.home').forEach(el=>{el.style.left=(18+Math.random()*34)+'%';el.style.top=(15+Math.random()*70)+'%';});
+pitch.querySelectorAll('.player.away').forEach(el=>{el.style.left=(58+Math.random()*28)+'%';el.style.top=(15+Math.random()*70)+'%';});
+setTimeout(()=>pitch.classList.remove('kick','goal-flash'),1800);}
+update()}
+function saveGame(show=true){try{localStorage.setItem('construaClubeSave',JSON.stringify(s));if(show){s.lastLog='Progresso salvo neste dispositivo!';document.getElementById('matchLog').textContent=s.lastLog}}catch(e){if(show)alert('Não foi possível salvar neste navegador.')}
+}
+function resetGame(){if(confirm('Tem certeza que deseja reiniciar o clube? Todo o progresso salvo será apagado.')){s=defaultState();try{localStorage.removeItem('construaClubeSave')}catch(e){}showTab('squad');update()}}
+
+const leagueData=[['🏴','Premier League','Inglaterra'],['🇪🇸','LaLiga','Espanha'],['🇮🇹','Serie A','Itália'],['🇩🇪','Bundesliga','Alemanha'],['🇫🇷','Ligue 1','França'],['🇧🇷','Brasileirão Série A','Brasil'],['🇵🇹','Primeira Liga','Portugal'],['🇦🇷','Liga Profesional','Argentina'],['🇳🇱','Eredivisie','Países Baixos'],['🇺🇸','MLS','Estados Unidos']];
+function renderLeagues(){const el=document.getElementById('leagueList');if(el)el.innerHTML=leagueData.map(l=>`<span class="tag" style="margin:3px;padding:9px">${l[0]} ${l[1]} • ${l[2]}</span>`).join('')}
+const careerData={"🇧🇷 Brasileirão Série A":["Flamengo","Palmeiras","Corinthians","São Paulo","Santos","Grêmio","Internacional","Atlético-MG","Cruzeiro","Botafogo","Fluminense","Vasco","Bahia","Fortaleza","Athletico-PR","Sport","Ceará","Vitória","Bragantino","Juventude"],"🏴 Premier League":["Manchester City","Liverpool","Arsenal","Manchester United","Chelsea","Tottenham","Newcastle United","Aston Villa","West Ham","Everton","Brighton","Wolverhampton"],"🇪🇸 LaLiga":["Real Madrid","Barcelona","Atlético de Madrid","Athletic Bilbao","Real Sociedad","Sevilla","Valencia","Villarreal","Real Betis","Girona"],"🇩🇪 Bundesliga":["Bayern de Munique","Borussia Dortmund","Bayer Leverkusen","RB Leipzig","Eintracht Frankfurt","Stuttgart","Wolfsburg","Borussia Mönchengladbach"],"🇫🇷 Ligue 1":["Paris Saint-Germain","Marseille","Lyon","Monaco","Lille","Nice","Lens","Rennes"],"🇮🇹 Serie A":["Inter de Milão","Milan","Juventus","Napoli","Roma","Lazio","Atalanta","Fiorentina","Bologna","Torino"],"🌎 Seleções":["Brasil","Argentina","Portugal","França","Inglaterra","Espanha","Alemanha","Itália","Países Baixos","Uruguai","Colômbia","Estados Unidos","Japão","Marrocos"]};
+function renderClubChoices(){const l=document.getElementById('careerLeague'),c=document.getElementById('careerClub');if(!l||!c)return;c.innerHTML=(careerData[l.value]||[]).map(x=>`<option>${x}</option>`).join('')}
+function chooseCareer(){const league=document.getElementById('careerLeague').value,club=document.getElementById('careerClub').value;if(!club)return;s.careerLeague=league;s.careerClub=club;s.teamName=club;s.lastLog='Carreira escolhida: '+club+' • '+league+'. Boa sorte na temporada!';document.getElementById('careerStatus').textContent='Você escolheu '+club+' em '+league+'. O nome do clube foi atualizado.';update()}
+
+function setDifficulty(v){s.difficulty=v;s.lastLog='Dificuldade definida: '+({easy:'Fácil',medium:'Médio',hard:'Hard (difícil)'}[v]||v)+'.';update()}
+let crowdOn=false,audioCtx=null,crowdTimer=null;
+function toggleCrowd(){crowdOn=!crowdOn;document.getElementById('crowdStatus').textContent='Som da torcida: '+(crowdOn?'ligado':'desligado');document.getElementById('crowdBtn').textContent=crowdOn?'Desligar torcida':'Ativar torcida';if(crowdOn){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();playCrowd()}catch(e){crowdOn=false;document.getElementById('crowdStatus').textContent='Som indisponível neste navegador'}}else if(crowdTimer)clearTimeout(crowdTimer)}
+function playCrowd(){if(!crowdOn||!audioCtx)return;for(let i=0;i<5;i++){let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sawtooth';o.frequency.value=90+Math.random()*180;g.gain.setValueAtTime(.0001,audioCtx.currentTime);g.gain.linearRampToValueAtTime(.025,audioCtx.currentTime+.05);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.35);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.35)}crowdTimer=setTimeout(playCrowd,600+Math.random()*800)}
+function renderLeaderboard(kind='money',btn){let rows=[];try{rows=JSON.parse(localStorage.getItem('fmLocalLeaderboard')||'[]')}catch(e){}let entry={name:s.teamName||'Meu Clube',money:s.money,fame:s.fans,cups:s.cups};rows=rows.filter(r=>r.name!==entry.name);rows.push(entry);rows.sort((a,b)=>b[kind]-a[kind]);rows=rows.slice(0,10);try{localStorage.setItem('fmLocalLeaderboard',JSON.stringify(rows))}catch(e){}let labels={money:'Dinheiro',fame:'Fama',cups:'Títulos'};let el=document.getElementById('leaderboard');el.dataset.kind=kind;el.innerHTML=rows.map((r,i)=>`<div class="item"><div class="emoji">${['🥇','🥈','🥉'][i]||'⚽'}</div><div class="iteminfo"><strong>${i+1}. ${escapeHtml(r.name)}</strong><small>${labels[kind]}: ${kind==='money'?fmt(r[kind]):Number(r[kind]).toLocaleString('pt-BR')}</small></div></div>`).join('');document.getElementById('rankUpdated').textContent='Atualizado: '+new Date().toLocaleTimeString('pt-BR');if(btn){document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}}
+function escapeHtml(str){return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+setInterval(()=>renderLeaderboard(document.getElementById('leaderboard')?.dataset.kind||'money'),300000);
+
+showTab('squad');renderStats();renderContent();renderLeagues();const cs=document.getElementById('careerLeague');cs.innerHTML=Object.keys(careerData).map(l=>`<option>${l}</option>`).join('');cs.value=s.careerLeague in careerData?s.careerLeague:Object.keys(careerData)[0];renderClubChoices();if((careerData[cs.value]||[]).includes(s.careerClub))document.getElementById('careerClub').value=s.careerClub;renderLeaderboard('money');
+</script>
+</body>
+</html>
